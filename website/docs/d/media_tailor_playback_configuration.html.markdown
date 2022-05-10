@@ -38,6 +38,7 @@ In addition to all arguments above, the following attributes are exported:
 * `playback_endpoint_prefix` - The URL that the player accesses to get a manifest from AWS Elemental MediaTailor.
 * `session_initialization_endpoint_prefix` - The URL that the player uses to initialize a session that uses client-side reporting.
 * `slate_ad_url` - The URL for a high-quality video asset to transcode and use to fill in time that's not used by ads.
+* `tags_all` - Map of tags assigned to the resource, including those inherited from the provider [`default_tags` configuration block](/docs/providers/aws/index.html#default_tags-configuration-block).
 * `transcode_profile_name` - The name that is used to associate this playback configuration with a custom transcode profile.
 * `video_content_source_url` - The URL prefix for the parent manifest for the stream, minus the asset ID.
 

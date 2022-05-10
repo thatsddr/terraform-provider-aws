@@ -63,6 +63,7 @@ The following arguments are supported:
 * `live_pre_roll_configuration` - (Optional) The configuration for pre-roll ad insertion. Detailed below.
 * `manifest_processing_rules` - (Optional) The configuration for manifest processing rules. Detailed below.
 * `personalization_threshold_seconds` - (Optional) Defines the maximum duration of underfilled ad time (in seconds) allowed in an ad break.
+* `tags` - (Optional) Key-value mapping of resource tags. If configured with a provider [`default_tags` configuration block](/docs/providers/aws/index.html#default_tags-configuration-block) present, tags with matching keys will overwrite those defined at the provider-level.
 
 ### `bumper`
 
@@ -97,6 +98,7 @@ In addition to all arguments above, the following attributes are exported:
 * `playback_endpoint_prefix` - The URL that the player accesses to get a manifest from AWS Elemental MediaTailor.
 * `session_initialization_endpoint_prefix` - The URL that the player uses to initialize a session that uses client-side reporting.
 * `transcode_profile_name` - The name that is used to associate this playback configuration with a custom transcode profile.
+* `tags_all` - Map of tags assigned to the resource, including those inherited from the provider [`default_tags` configuration block](/docs/providers/aws/index.html#default_tags-configuration-block).
 
 ### `log_configuration`
 
