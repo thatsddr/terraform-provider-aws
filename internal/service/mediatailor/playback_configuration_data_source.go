@@ -187,6 +187,7 @@ func DataSourcePlaybackConfiguration() *schema.Resource {
 
 func dataSourcePlaybackConfigurationRead(_ context.Context, d *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	conn := meta.(*conns.AWSClient).MediaTailorConn
+	ignoreTagsConfig := meta.(*conns.AWSClient).IgnoreTagsConfig
 
 	configurationName := d.Get("name").(string)
 
@@ -268,8 +269,11 @@ func dataSourcePlaybackConfigurationRead(_ context.Context, d *schema.ResourceDa
 		return diag.FromErr(fmt.Errorf("error setting slate_ad_url: %s", err))
 	}
 
-	if err = d.Set("tags", result.Tags); err != nil {
-		return diag.FromErr(fmt.Errorf("error setting tags: %s", err))
+	tags, err := ListTags(conn, aws.StringValue(result.PlaybackConfigurationArn))
+	if tags != nil {
+		if err := d.Set("tags", tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig).Map()); err != nil {
+			return diag.FromErr(fmt.Errorf("error setting tags: %w", err))
+		}
 	}
 
 	if err = d.Set("transcode_profile_name", result.TranscodeProfileName); err != nil {
