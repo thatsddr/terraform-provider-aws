@@ -34,6 +34,8 @@ func TestAccPlaybackConfigurationResource_basic(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "ad_decision_server_url", "https://www.example.com/ads"),
 					resource.TestCheckResourceAttrSet(resourceName, "playback_configuration_arn"),
 					resource.TestCheckResourceAttr(resourceName, "video_content_source_url", "https://www.example.com/source"),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "0"),
+					resource.TestCheckResourceAttr(resourceName, "tags_all.%", "0"),
 				),
 			},
 			{
@@ -72,6 +74,46 @@ func TestAccPlaybackConfigurationResource_recreate(t *testing.T) {
 					resource.TestCheckResourceAttr(resourceName, "ad_decision_server_url", "https://www.example.com/ads"),
 					resource.TestCheckResourceAttrSet(resourceName, "playback_configuration_arn"),
 					resource.TestCheckResourceAttr(resourceName, "video_content_source_url", "https://www.example.com/source"),
+				),
+			},
+		},
+	})
+}
+
+func TestAccPlaybackConfigurationResource_tags(t *testing.T) {
+	rName := sdkacctest.RandomWithPrefix(acctest.ResourcePrefix)
+	resourceName := "aws_media_tailor_playback_configuration.test"
+
+	resource.ParallelTest(t, resource.TestCase{
+		PreCheck:          func() { acctest.PreCheck(t) },
+		ErrorCheck:        acctest.ErrorCheck(t, mediatailor.EndpointsID),
+		ProviderFactories: acctest.ProviderFactories,
+		CheckDestroy:      testAccCheckPlaybackConfigurationDestroy,
+		Steps: []resource.TestStep{
+			{
+				Config: testAccResourceConfig_Tags1(rName, "k1", "v1"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.k1", "v1"),
+				),
+			},
+			{
+				Config: testAccResourceConfig_Tags2(rName, "k1", "v1modified", "k2", "v2"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "2"),
+					resource.TestCheckResourceAttr(resourceName, "tags.k1", "v1modified"),
+					resource.TestCheckResourceAttr(resourceName, "tags.k2", "v2"),
+				),
+			},
+			{
+				Config: testAccResourceConfig_Tags1(rName, "k2", "v2"),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr(resourceName, "name", rName),
+					resource.TestCheckResourceAttr(resourceName, "tags.%", "1"),
+					resource.TestCheckNoResourceAttr(resourceName, "tags.k1"),
+					resource.TestCheckResourceAttr(resourceName, "tags.k2", "v2"),
 				),
 			},
 		},
@@ -192,7 +234,7 @@ func TestAccPlaybackConfigurationResource_validateVideoContentSourceURL(t *testi
 	})
 }
 
-func TestAccPlaybackConfigurationResource_Update(t *testing.T) {
+func TestAccPlaybackConfigurationResource_update(t *testing.T) {
 	rName := sdkacctest.RandomWithPrefix(acctest.ResourcePrefix)
 	resourceName := "aws_media_tailor_playback_configuration.test"
 	exampleURL := "https://www.example.com"
@@ -327,6 +369,33 @@ resource "aws_media_tailor_playback_configuration" "test"{
   video_content_source_url = "https://www.example.com/source"
 }
 `, rName, mpdLocation, originManifestType)
+}
+
+func testAccResourceConfig_Tags1(rName, tagKey1, tagValue1 string) string {
+	return fmt.Sprintf(`
+resource "aws_media_tailor_playback_configuration" "test"{
+  ad_decision_server_url = "https://www.example.com/ads"
+  name = "%[1]s"
+  tags = {
+	"%[2]s": "%[3]s"
+  }
+  video_content_source_url = "https://www.example.com/source"
+}
+`, rName, tagKey1, tagValue1)
+}
+
+func testAccResourceConfig_Tags2(rName, tagKey1, tagValue1, tagKey2, tagValue2 string) string {
+	return fmt.Sprintf(`
+resource "aws_media_tailor_playback_configuration" "test"{
+  ad_decision_server_url = "https://www.example.com/ads"
+  name = "%[1]s"
+  tags = {
+	"%[2]s": "%[3]s"
+	"%[4]s": "%[5]s"
+  }
+  video_content_source_url = "https://www.example.com/source"
+}
+`, rName, tagKey1, tagValue1, tagKey2, tagValue2)
 }
 
 func testAccResourceConfig_LivePreRollConfiguration(rName, adDecisionServerUrl string, maxDurationSeconds int) string {
