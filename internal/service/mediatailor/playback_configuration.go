@@ -339,7 +339,7 @@ func resourcePlaybackConfigurationRead(ctx context.Context, d *schema.ResourceDa
 	arn := aws.StringValue(res.PlaybackConfigurationArn)
 	tags, err := ListTags(conn, arn)
 	if err != nil {
-		return diag.FromErr(fmt.Errorf("error listing tags for media store container (%s): %s", arn, err))
+		return diag.FromErr(fmt.Errorf("error listing tags for media tailor playback configuration (%s): %s", arn, err))
 	}
 	tags = tags.IgnoreAWS().IgnoreConfig(ignoreTagsConfig)
 	//lintignore:AWSR002
