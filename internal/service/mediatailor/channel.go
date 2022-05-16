@@ -7,10 +7,12 @@ import (
 	"github.com/aws/aws-sdk-go/aws/arn"
 	"github.com/aws/aws-sdk-go/service/mediatailor"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
+	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/customdiff"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 	"github.com/hashicorp/terraform-provider-aws/internal/conns"
 	tftags "github.com/hashicorp/terraform-provider-aws/internal/tags"
+	"github.com/hashicorp/terraform-provider-aws/internal/verify"
 	"strings"
 )
 
@@ -119,6 +121,10 @@ func ResourceChannel() *schema.Resource {
 				ValidateFunc: validation.StringInSlice([]string{"BASIC", "STANDARD"}, false),
 			},
 		},
+		CustomizeDiff: customdiff.Sequence(
+			customdiff.ForceNewIfChange("channel_name", func(ctx context.Context, old, new, meta interface{}) bool { return old.(string) != new.(string) }),
+			verify.SetTagsDiff,
+		),
 	}
 }
 
