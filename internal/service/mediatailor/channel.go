@@ -171,7 +171,7 @@ func resourceChannelRead(_ context.Context, d *schema.ResourceData, meta interfa
 	d.Set("arn", res.Arn)
 	d.Set("channel_name", res.ChannelName)
 	d.Set("channel_state", res.ChannelState)
-	d.Set("creation_time", res.CreationTime)
+	d.Set("creation_time", res.CreationTime.String())
 	if res.FillerSlate != nil && res.FillerSlate != &(mediatailor.SlateSource{}) {
 		temp := map[string]interface{}{}
 		if res.FillerSlate.SourceLocationName != nil {
@@ -182,7 +182,7 @@ func resourceChannelRead(_ context.Context, d *schema.ResourceData, meta interfa
 		}
 		d.Set("filler_slate", []interface{}{temp})
 	}
-	d.Set("last_modified_time", res.LastModifiedTime)
+	d.Set("last_modified_time", res.LastModifiedTime.String())
 
 	var outputs []map[string]interface{}
 	for _, o := range res.Outputs {
@@ -228,7 +228,7 @@ func resourceChannelRead(_ context.Context, d *schema.ResourceData, meta interfa
 	}
 
 	d.Set("playback_mode", res.PlaybackMode)
-	d.Set("Tier", res.Tier)
+	d.Set("tier", res.Tier)
 	return nil
 }
 
